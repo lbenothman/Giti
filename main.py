@@ -20,6 +20,12 @@ app = typer.Typer()
 
 @app.command()
 def list():
+    branches = get_branches()
+
+    if len(branches) == 0:
+        typer.echo(f"There is no branch to checkout")
+        return
+
     branch = inquirer.select(
         message="Select a branch:",
         choices=get_branches(),
@@ -29,13 +35,19 @@ def list():
 
 @app.command()
 def delete():
-    branches = inquirer.checkbox(
+    branches = get_branches()
+
+    if len(branches) == 0:
+        typer.echo(f"There is no branch to delete")
+        return
+
+    branches_to_delete = inquirer.checkbox(
         message="Select the branches:",
-        choices=get_branches(),
+        choices=branches,
         cycle=False,
     ).execute()
 
-    for branch in branches:
+    for branch in branches_to_delete:
         repo.delete_head(branch, force = True)
         typer.echo(f"Branch {branch} deleted")
 
