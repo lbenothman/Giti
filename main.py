@@ -1,7 +1,6 @@
 import typer
 import git
 from InquirerPy import inquirer
-from pprint import pprint
 
 try:
     repo = git.Repo('.')
@@ -37,8 +36,16 @@ def delete():
     ).execute()
 
     for branch in branches:
-        repo.delete_head(branch)
+        repo.delete_head(branch, force = True)
         typer.echo(f"Branch {branch} deleted")
+
+@app.command()
+def install():
+    import os
+    file_path = os.path.realpath(__file__)
+
+    os.system(f"git config --global alias.list '!python3 {file_path} list'")
+    os.system(f"git config --global alias.del '!python3 {file_path} delete'")
 
 if __name__ == "__main__":
     app()
